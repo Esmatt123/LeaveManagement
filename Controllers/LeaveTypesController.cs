@@ -8,40 +8,47 @@ using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Web.Data;
 using AutoMapper;
 using LeaveManagement.Web.Models;
+using System.Drawing;
+using System.Reflection.Metadata;
+using LeaveManagement.Web.Contracts;
 
 /* The IActionResult interface in ASP.NET Core represents the result of an
  action method and provides a way to return various types of responses,
  such as a view, a file, or JSON data, from an action method to the client. */
 
+/* The IMapper interface provides methods for mapping objects of one type to objects of 
+ * another type. It defines methods such as Map, Map<TDestination>, and Map<TSource, 
+ * TDestination>, which can be used to map objects of different types. */
+
 namespace LeaveManagement.Web.Controllers
 {
     public class LeaveTypesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+       
         private readonly IMapper mapper;
+        private readonly ILeaveTypeRepository leaveTypeRepository;
 
-        public LeaveTypesController(ApplicationDbContext context, IMapper mapper)
+        public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
         {
-            _context = context;
+            this.leaveTypeRepository = leaveTypeRepository;
             this.mapper = mapper;
         }
 
         // GET: LeaveTypes
         public async Task<IActionResult> Index()
         {
-             var leaveTypes = mapper.Map<List<LeaveTypeVM>>(await _context.LeaveTypes.ToListAsync());
+ 
+             var leaveTypes = mapper.Map<List<LeaveTypeVM>>(await leaveTypeRepository.GetAllAsync()); 
+            //This code is using the AutoMapper library to map a list of LeaveType entities retrieved from the database context "_context" to a list of LeaveTypeVM (view model) objects, and then returning a view with that list of view model objects.
             return View(leaveTypes);
         }
 
         // GET: LeaveTypes/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id) 
         {
-			if (id == null || _context.LeaveTypes == null)
-			{
-				return NotFound();
-			}
+			
 
-			var leaveType = await _context.LeaveTypes.FindAsync(id);
+			var leaveType = await leaveTypeRepository.GetAsync(id);
 			if (leaveType == null)
 			{
 				return NotFound();
@@ -49,7 +56,15 @@ namespace LeaveManagement.Web.Controllers
 
 			var leaveTypeVM = mapper.Map<LeaveTypeVM>(leaveType);
 			return View(leaveTypeVM);
-		}
+            /*This code defines an action method called "Details" that takes an integer "id"
+            parameter, retrieves a LeaveType entity with the specified "id" from the database context
+            "_context" using the FindAsync method, maps that entity to a LeaveTypeVM (view model)
+           object using AutoMapper, and then returns a view with that view model object.
+           It also includes null and not-found checks to handle
+           scenarios where the "id" parameter is null or the specified LeaveType
+            entity cannot be found in the database.*/
+
+        }
 
         // GET: LeaveTypes/Create
         public IActionResult Create()
@@ -67,22 +82,25 @@ namespace LeaveManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 var leaveType = mapper.Map<LeaveType>(leaveTypeVM);
-                _context.Add(leaveType);
-                await _context.SaveChangesAsync();
+                await leaveTypeRepository.AddAsync(leaveType);
                 return RedirectToAction(nameof(Index));
             }
             return View(leaveTypeVM);
+            /*This code defines an action method called "Create" that accepts a POST request 
+            and a LeaveTypeVM (view model) object as its parameter.
+            It first checks if the model state is valid and if so, maps the LeaveTypeVM
+            object to a LeaveType entity using AutoMapper, adds the entity to 
+            the database context "_context", saves the changes to the 
+            database using SaveChangesAsync method, and then redirects the user 
+            to the "Index" action method. If the model state is not valid, the method 
+            returns the same view with the LeaveTypeVM object 
+            to display validation errors to the user. */
         }
 
         // GET: LeaveTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.LeaveTypes == null)
-            {
-                return NotFound();
-            }
-
-            var leaveType = await _context.LeaveTypes.FindAsync(id);
+            var leaveType = await leaveTypeRepository.GetAsync(id);
             if (leaveType == null)
             {
                 return NotFound();
@@ -90,6 +108,14 @@ namespace LeaveManagement.Web.Controllers
 
             var leaveTypeVM = mapper.Map<LeaveTypeVM>(leaveType);
             return View(leaveTypeVM);
+            /* This code defines an action method called "Edit" that takes an integer 
+             "id" parameter, retrieves a LeaveType entity with the specified "id" from the 
+            database context "_context" using the FindAsync method, maps that entity to 
+            a LeaveTypeVM (view model) object using AutoMapper, and then returns a view 
+            with that view model object. It also includes null and not-found checks to 
+            handle scenarios where the "id" parameter is null or the specified LeaveType 
+            entity cannot be found in the database.*/
+
         }
 
         // POST: LeaveTypes/Edit/5
@@ -109,12 +135,11 @@ namespace LeaveManagement.Web.Controllers
                 try
                 {
 					var leaveType = mapper.Map<LeaveType>(leaveTypeVM);
-					_context.Update(leaveType);
-                    await _context.SaveChangesAsync();
+					await leaveTypeRepository.UpdateAsync(leaveType);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LeaveTypeExists(leaveTypeVM.Id))
+                    if (!await LeaveTypeExistsAsync(leaveTypeVM.Id))
                     {
                         return NotFound();
                     }
@@ -128,38 +153,18 @@ namespace LeaveManagement.Web.Controllers
             return View(leaveTypeVM);
         }
 
-        // GET: LeaveTypes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.LeaveTypes == null)
-            {
-                return NotFound();
-            }
-
-            var leaveType = await _context.LeaveTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (leaveType == null)
-            {
-                return NotFound();
-            }
-
-            return View(leaveType);
-        }
+        
+       
 
         // POST: LeaveTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var leaveType = await _context.LeaveTypes.FindAsync(id);
-                _context.LeaveTypes.Remove(leaveType);
-            await _context.SaveChangesAsync();
+            await leaveTypeRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LeaveTypeExists(int id)
-        {
-          return _context.LeaveTypes.Any(e => e.Id == id);
-        }
+      
     }
 }
