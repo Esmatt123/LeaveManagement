@@ -27,7 +27,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "no-reply@leavemanagement.com"));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<ILeaveTypeRepository, ILeaveTypeRepository>();
+builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
