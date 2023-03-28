@@ -11,6 +11,9 @@ using LeaveManagement.Web.Models;
 using System.Drawing;
 using System.Reflection.Metadata;
 using LeaveManagement.Web.Contracts;
+using Microsoft.AspNetCore.Authorization;
+using LeaveManagement.Web.Constants;
+
 
 /* The IActionResult interface in ASP.NET Core represents the result of an
  action method and provides a way to return various types of responses,
@@ -22,6 +25,7 @@ using LeaveManagement.Web.Contracts;
 
 namespace LeaveManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class LeaveTypesController : Controller
     {
        
@@ -139,7 +143,7 @@ namespace LeaveManagement.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await LeaveTypeExistsAsync(leaveTypeVM.Id))
+                    if (!await leaveTypeRepository.Exists(leaveTypeVM.Id))
                     {
                         return NotFound();
                     }
