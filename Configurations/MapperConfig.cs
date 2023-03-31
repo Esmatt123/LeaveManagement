@@ -8,6 +8,10 @@ namespace LeaveManagement.Web.Configurations
         public MapperConfig() 
         {
             CreateMap<LeaveType, LeaveTypeVM>().ReverseMap(); //This states that it is legal to convert from leavetype to leavetypevm and reverse
+            CreateMap<Employee, EmployeeListVM>().ReverseMap();
+            CreateMap<Employee, EmployeeAllocationVM>().ReverseMap();
+            CreateMap<LeaveAllocation, LeaveAllocationVM>().ReverseMap();
+            CreateMap<LeaveAllocation, LeaveAllocationEditVM>().ReverseMap();
         }
     }
 }

@@ -11,14 +11,21 @@ namespace LeaveManagement.Web.Repositories
 
         public GenericRepository(ApplicationDbContext context)
         {
+            //Constructor for applicationdbcontext
             this.context = context;
         }
 
         public async Task<T> AddAsync(T entity)
         {
-           await context.AddAsync(entity);
-            await context.SaveChangesAsync();
+           await context.AddAsync(entity); //Adds to the db
+            await context.SaveChangesAsync(); //Saves changes
             return entity;
+        }
+
+        public async Task AddRangeAsync(List<T> entities)
+        {
+            await context.AddRangeAsync(entities); //tracks changes in the database, that will be inserted once savechanges is called
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -51,13 +58,10 @@ namespace LeaveManagement.Web.Repositories
         public async Task UpdateAsync(T entity)
         {
           
-            context.Update(entity);
+            context.Update(entity); //Updated database
             await context.SaveChangesAsync();
         }
 
-        Task IGenericRepository<T>.AddAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

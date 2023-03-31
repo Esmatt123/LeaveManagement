@@ -10,6 +10,6 @@ namespace LeaveManagement.Web.Data
         public DateTime DateOfBirth { get; set; }
         public DateTime DateJoined { get; set; }
 
-        
+        //This is database stuff
     } 
 }
