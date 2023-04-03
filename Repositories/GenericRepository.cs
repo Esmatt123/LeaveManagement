@@ -31,7 +31,10 @@ namespace LeaveManagement.Web.Repositories
         public async Task DeleteAsync(int id)
         {
             var entity = await GetAsync(id);
-            context.Set<T>().Remove(entity);
+            if (entity != null)
+            {
+                context.Set<T>().Remove(entity);
+            }
             await context.SaveChangesAsync();
         }
 

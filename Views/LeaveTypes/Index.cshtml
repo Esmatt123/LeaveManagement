@@ -45,7 +45,7 @@
       
   
 </table>
-<form id="deleteFrom" asp-action="Delete">
+<form id="deleteForm" asp-action="Delete">
 	<input type="hidden" id="leaveTypeId" name="Id" />
 </form>
 <form id="allocationForm" asp-action="AllocateLeave">
@@ -54,7 +54,7 @@
             @section Scripts{
                 <script>
                     $(function(){
-            $('.table').DataTable();
+           
                         $('.deleteBtn').click(function(e){
                             swal({
                                 title: "Are you sure?",
@@ -67,7 +67,7 @@
                                     var btn = $(this);
                                     var id = btn.data("id");
                                     $('#leaveTypeId').val(id);
-                                    $('#deleteFrom').submit();
+                                    $('#deleteForm').submit();
                                 }
                             } );
                         });
