@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using LeaveManagement.Web.Data;
+using LeaveManagement.Data;
 using AutoMapper;
-using LeaveManagement.Web.Models;
+using LeaveManagement.Common.Models;
 using System.Drawing;
 using System.Reflection.Metadata;
-using LeaveManagement.Web.Contracts;
+using LeaveManagement.Application.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using LeaveManagement.Web.Constants;
+using LeaveManagement.Common.Constants;
 
 
 /* The IActionResult interface in ASP.NET Core represents the result of an
@@ -107,12 +107,14 @@ namespace LeaveManagement.Web.Controllers
         // GET: LeaveTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            
             var leaveType = await leaveTypeRepository.GetAsync(id);
+                mapper.Map<LeaveTypeVM>(leaveType);
             if (leaveType == null)
             {
                 return NotFound();
             }
-
+                
             var leaveTypeVM = mapper.Map<LeaveTypeVM>(leaveType);
             return View(leaveTypeVM);
             /* This code defines an action method called "Edit" that takes an integer 
@@ -137,11 +139,16 @@ namespace LeaveManagement.Web.Controllers
                 return NotFound();
             }
 
+            var leaveType = await leaveTypeRepository.GetAsync(id);
+            if(leaveType == null) { 
+            return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-					var leaveType = mapper.Map<LeaveType>(leaveTypeVM);
+					mapper.Map<LeaveType>(leaveTypeVM);
 					await leaveTypeRepository.UpdateAsync(leaveType);
                 }
                 catch (DbUpdateConcurrencyException)

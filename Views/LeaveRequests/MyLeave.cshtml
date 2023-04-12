@@ -98,8 +98,12 @@
             
           
             <td>
-                <a asp-action="Delete" class="btn btn-danger btn-sm" asp-route-id="@item.Id">Cancel Requests</a> 
-               
+                @if(item.Approved == null){
+               <form>
+                   <input asp-form="@item.Id" type="hidden" />
+                <button type="submit" class="btn btn-danger btn-sm">Cancel Requests</button> 
+               </form> 
+                }
             </td>
         </tr>
 }
@@ -112,19 +116,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.LeaveRequests[1].StartDate)
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].StartDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LeaveRequests[1].EndDate)
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].EndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LeaveRequests[1].LeaveType)
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].LeaveType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LeaveRequests[1].DateRequested)
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].DateRequested)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LeaveRequests[1].Approved)
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].Approved)
             </th>
 
             <th></th>
