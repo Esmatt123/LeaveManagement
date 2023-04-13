@@ -6,6 +6,7 @@ using LeaveManagement.Application.Configurations;
 using LeaveManagement.Application.Contracts;
 using LeaveManagement.Application.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using LeaveManagement.Web;
 using LeaveManagement.Web.Services;
 using Serilog;
 
@@ -19,6 +20,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<Employee>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+
+
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -35,7 +40,6 @@ builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
-builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 builder.Services.AddControllersWithViews();
 
