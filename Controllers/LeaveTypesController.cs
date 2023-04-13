@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using LeaveManagement.Web.Data;
+using LeaveManagement.Data;
 using AutoMapper;
-using LeaveManagement.Web.Models;
+using LeaveManagement.Common.Models;
 using System.Drawing;
 using System.Reflection.Metadata;
-using LeaveManagement.Web.Contracts;
+using LeaveManagement.Application.Contracts;
+using Microsoft.AspNetCore.Authorization;
+using LeaveManagement.Common.Constants;
+
 
 /* The IActionResult interface in ASP.NET Core represents the result of an
  action method and provides a way to return various types of responses,
@@ -22,16 +25,20 @@ using LeaveManagement.Web.Contracts;
 
 namespace LeaveManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class LeaveTypesController : Controller
     {
        
         private readonly IMapper mapper;
+        private readonly ILeaveAllocationRepository leaveAllocationRepository;
         private readonly ILeaveTypeRepository leaveTypeRepository;
 
-        public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+        public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository, 
+            IMapper mapper, ILeaveAllocationRepository leaveAllocationRepository)
         {
             this.leaveTypeRepository = leaveTypeRepository;
             this.mapper = mapper;
+            this.leaveAllocationRepository = leaveAllocationRepository;
         }
 
         // GET: LeaveTypes
@@ -100,12 +107,14 @@ namespace LeaveManagement.Web.Controllers
         // GET: LeaveTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            
             var leaveType = await leaveTypeRepository.GetAsync(id);
+                mapper.Map<LeaveTypeVM>(leaveType);
             if (leaveType == null)
             {
                 return NotFound();
             }
-
+                
             var leaveTypeVM = mapper.Map<LeaveTypeVM>(leaveType);
             return View(leaveTypeVM);
             /* This code defines an action method called "Edit" that takes an integer 
@@ -130,16 +139,21 @@ namespace LeaveManagement.Web.Controllers
                 return NotFound();
             }
 
+            var leaveType = await leaveTypeRepository.GetAsync(id);
+            if(leaveType == null) { 
+            return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-					var leaveType = mapper.Map<LeaveType>(leaveTypeVM);
+					mapper.Map<LeaveType>(leaveTypeVM);
 					await leaveTypeRepository.UpdateAsync(leaveType);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await LeaveTypeExistsAsync(leaveTypeVM.Id))
+                    if (!await leaveTypeRepository.Exists(leaveTypeVM.Id))
                     {
                         return NotFound();
                     }
@@ -165,6 +179,13 @@ namespace LeaveManagement.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AllocateLeave(int id)
+        {
+            await leaveAllocationRepository.LeaveAllocation(id);
+            return RedirectToAction(nameof(Index));
+        }
       
     }
 }
