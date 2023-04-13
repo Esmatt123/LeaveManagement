@@ -40,6 +40,12 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    - name: Copy LeaveManagement.Common and LeaveManagement.Application files to the package
+      run: |
+        mkdir "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LeaveManagement.Common"
+        mkdir "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LeaveManagement.Application"
+        copy-item -path C:\Users\esmat\source\repos\Esmatt123\LeaveManagement.Common\LeaveManagement.Common.csproj -destination "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LeaveManagement.Common/"
+        copy-item -path C:\Users\esmat\source\repos\Esmatt123\LeaveManagement.Application\LeaveManagement.Application.csproj -destination "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LeaveManagement.Application/"
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:
