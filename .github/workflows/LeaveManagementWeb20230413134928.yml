@@ -2,7 +2,7 @@ name: Build and deploy .NET Core application to Web App LeaveManagementWeb202304
 on:
   push:
     branches:
-    - desktop-version
+    - main
 env:
   AZURE_WEBAPP_NAME: LeaveManagementWeb20230413134928
   AZURE_WEBAPP_PACKAGE_PATH: .\published
