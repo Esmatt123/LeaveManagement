@@ -74,7 +74,7 @@ namespace LeaveManagement.Web.Controllers
                 }
                
             }
-            catch(Exception ex)
+            catch(Exception)
             {
 
                 ModelState.AddModelError(string.Empty, "An Error Has Occurred. Please try again later.");

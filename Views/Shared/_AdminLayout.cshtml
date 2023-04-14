@@ -232,22 +232,17 @@
                         {
                             <li class="sidebar-item">
                                 <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                   href="pages-profile.html" aria-expanded="false">
-                                    <i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span>
+                               asp-area="" asp-controller="LeaveRequests" asp-action="Create">
+                                    <i class="mdi mdi-account-network"></i><span class="hide-menu">Create Leave Request</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                   href="table-basic.html" aria-expanded="false">
-                                    <i class="mdi mdi-border-all"></i><span class="hide-menu">Table</span>
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">
+                                    <i class="mdi mdi-border-all"></i><span class="hide-menu">My Leave</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="LeaveRequests" asp-action="Create">Apply For Leave</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">My Leave</a>
-                            </li>
+                            
+                            
                         }
                         @if (User.IsInRole(Roles.Administrator))
                         {
